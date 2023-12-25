@@ -33,3 +33,7 @@
 .rounded {
     border-radius: 10px !important;
 }
+
+.pd-l{
+    padding-left: 16px;
+}

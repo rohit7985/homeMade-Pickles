@@ -64,11 +64,9 @@
                                             <h6 class="fw-semibold mb-0">Visibility</h6>
                                         </th>
                                         <th class="border-bottom-0">
-                                            <h6 class="fw-semibold mb-0">Edit</h6>
+                                            <h6 class="fw-semibold mb-0">Action</h6>
                                         </th>
-                                        <th class="border-bottom-0">
-                                            <h6 class="fw-semibold mb-0">Delete</h6>
-                                        </th>
+                                        
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -126,12 +124,23 @@
                                                 </a>
                                             </td>
                                             <td class="border-bottom-0">
-                                                <a href={{ route('products.edit', $product->id) }}
-                                                    class="fw-semibold mb-0 fs-4">Edit</a>
-                                            </td>
-                                            <td class="border-bottom-0">
-                                                <a href="#" class="fw-semibold mb-0 fs-4 delete-product"
-                                                    data-product-id="{{ $product->id }}">Delete</a>
+                                                <a href="#" class="fw-semibold mb-0 fs-4"
+                                                    data-bs-toggle="dropdown" aria-expanded="false"><i
+                                                        class="fa fa-ellipsis-v" aria-hidden="false"></i>
+                                                </a>
+                                                <ul class="dropdown-menu dropdown-menu-end">
+                                                    <li>
+                                                        <a href="#" class="fw-semibold mb-0 fs-4 delete-product" data-product-id="{{ $product->id }}">
+                                                            <i class="fa fa-trash pd-l" aria-hidden="true"></i>Delete
+                                                        </a>
+                                                    </li>
+                                                    
+                                                    <li>
+                                                        <a href="{{ route('products.edit', $product->id) }}" class="fw-semibold mb-0 fs-4">
+                                                            <i class="fas fa-pencil-alt pd-l"></i> Edit
+                                                        </a>
+                                                    </li>
+                                                  </ul>
                                             </td>
                                         </tr>
                                     @endforeach
