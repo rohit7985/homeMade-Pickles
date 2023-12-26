@@ -17,7 +17,31 @@
                             {{ session('error') }}
                         </div>
                     @endif
+                    @if ($errors->has('otp'))
+                        <div class="alert alert-danger">
+                            <p>{{ $errors->first('otp') }}</p>
+                        </div>
+                    @endif
+
                     <h1 class="mb-5 display-3 text-primary">100% Organic Pickles</h1>
+                    @if (isset($user))
+                        <form action="{{ route('otp.verify') }}" method="post">
+                            @csrf
+                            <input type="hidden" name="user_id" value={{ $user->id }}>
+                            <div class="position-relative mx-auto mb">
+                                <input class="form-control border-2 border-secondary w-75 py-3 px-4 rounded-pill"
+                                    type="email" name="email" placeholder="Enter Email" value={{ $user->email }}>
+                            </div>
+                            <div class="position-relative mx-auto mb">
+                                <input class="form-control border-2 border-secondary w-75 py-3 px-4 rounded-pill"
+                                    name="otp" type="text" placeholder="Enter OTP">
+                            </div>
+                            <div class="position-relative mx-auto mb">
+                                <input class="btn border border-secondary text-primary rounded-pill px-4 py-3"
+                                    type="submit" value="Verify OTP">
+                            </div>
+                        </form>
+                    @else
                     <form action="{{ route('user.login') }}" method="post">
                         @csrf
                         <div class="position-relative mx-auto mb">
@@ -26,13 +50,14 @@
                         </div>
                         <div class="position-relative mx-auto mb">
                             <input class="form-control border-2 border-secondary w-75 py-3 px-4 rounded-pill"
-                              name="password"  type="password" placeholder="Enter Password">
+                                name="password" type="password" placeholder="Enter Password">
                         </div>
                         <div class="position-relative mx-auto mb">
                             <input class="btn border border-secondary text-primary rounded-pill px-4 py-3" type="submit"
                                 value="Login">
                         </div>
                     </form>
+                    @endif
                     <h4 class=" text-secondary">Don't have an account? <a
                             href="{{ route('view.registration') }}">Registration</a></h4>
                 </div>

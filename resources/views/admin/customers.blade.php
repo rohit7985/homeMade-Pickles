@@ -91,6 +91,9 @@
                                         <th class="border-bottom-0">
                                             <h6 class="fw-semibold mb-0">Mobile Number</h6>
                                         </th>
+                                        <th class="border-bottom-0">
+                                            <h6 class="fw-semibold mb-0">Approval Status</h6>
+                                        </th>
                                         
                                         <th class="border-bottom-0">
                                             <h6 class="fw-semibold mb-0">Action</h6>
@@ -114,6 +117,32 @@
                                                 <h6 class="fw-semibold mb-0">{{ $customer->mobile_number }}</h6>
                                             </td>
                                             <td class="border-bottom-0">
+                                                <h6 class="fw-semibold mb-0" style="
+                                                    @if($customer->status == '0')
+                                                        color: blue; /* Change color for Pending */
+                                                    @elseif($customer->status == '1')
+                                                        color: green; /* Change color for Approved */
+                                                    @elseif($customer->status == '2')
+                                                        color: red; /* Change color for Disapproved */
+                                                    @else
+                                                        color: black; /* Default color for unknown status */
+                                                    @endif
+                                                ">
+                                                    @if($customer->status == '0')
+                                                        Pending
+                                                    @elseif($customer->status == '1')
+                                                        Approved
+                                                    @elseif($customer->status == '2')
+                                                        Disapproved
+                                                    @else
+                                                        Unknown Status
+                                                    @endif
+                                                </h6>
+                                            </td>
+                                            
+                                            
+                                            
+                                            <td class="border-bottom-0">
                                                 <a href="#" class="fw-semibold mb-0 fs-4"
                                                     data-bs-toggle="dropdown" aria-expanded="false"><i
                                                         class="fa fa-ellipsis-v" aria-hidden="false"></i>
@@ -122,6 +151,11 @@
                                                     <li>
                                                         <a href="#" class="fw-semibold mb-0 fs-4 delete-product" data-product-id="{{ $customer->id }}">
                                                             <i class="fa fa-trash pd-l" aria-hidden="true"></i>Delete
+                                                        </a>
+                                                    </li>
+                                                    <li>
+                                                        <a href="#" class="fw-semibold mb-0 fs-4 change-status" data-product-id="{{ $customer->id }}">
+                                                            <i class="fa fa-check-square pd-l" aria-hidden="true"></i>Change Status
                                                         </a>
                                                     </li>
                                                     
@@ -188,6 +222,26 @@
             $.ajax({
                 url: '/admin/customer/' + customerId,
                 type: 'DELETE',
+                headers: {
+                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                },
+                success: function(response) {
+                    location.reload();
+                },
+                error: function(xhr) {
+                    console.log(xhr.responseText);
+                }
+            });
+        });
+    </script>
+
+     <script>
+        $(document).on('click', '.change-status', function(e) {
+            e.preventDefault();
+            var customerId = $(this).data('product-id'); 
+            $.ajax({
+                url: '/admin/customer/update/' + customerId,
+                type: 'PATCH',
                 headers: {
                     'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
                 },

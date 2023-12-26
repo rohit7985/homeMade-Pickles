@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\AdminController;
 use App\Http\Controllers\CartController;
 use App\Http\Controllers\LoginController;
 use App\Http\Controllers\ProductController;
@@ -36,6 +37,7 @@ Route::get('/product/{product}/details',[shopController::class,'productDetails']
 
 Route::post('/user/create', [UserController::class, 'createUser'])->name('users.create');
 Route::post('/user/login', [UserController::class, 'login'])->name('user.login');
+Route::post('/user/verify-otp', [UserController::class, 'verifyOtp'])->name('otp.verify');
 
 
 
@@ -87,6 +89,8 @@ Route::middleware('auth:admin')->prefix('admin')->group(function () {
     Route::get('/customers',[UserController::class, 'viewCustomers'])->name('admin.view.customers');
     Route::post('/user/create', [UserController::class, 'createUser'])->name('admin.user.create');
     Route::delete('/customer/{customer}', [UserController::class, 'destroy'])->name('customer.destroy');
+    Route::patch('/customer/update/{id}', [AdminController::class, 'updateStatus']);
+
 
 
 
