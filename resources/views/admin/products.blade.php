@@ -86,7 +86,7 @@
                                                 {{-- <span class="fw-normal"></span> --}}
                                             </td>
                                             <td class="border-bottom-0">
-                                                <p class="mb-0 fw-normal">{{ $product->price }} INR</p>
+                                                <p class="mb-0 fw-normal">&#8377;{{ $product->price }}</p>
                                             </td>
                                             <td class="border-bottom-0">
                                                 <div class="d-flex align-items-center gap-2">
@@ -260,6 +260,7 @@
                 data: {
                     product_id: productId,
                     new_quantity: newQuantity,
+                    from: 'Admin',
                     _token: "{{ csrf_token() }}"
                 },
                 success: function(response) {

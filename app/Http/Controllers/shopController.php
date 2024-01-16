@@ -20,7 +20,8 @@ class shopController extends Controller
     public function productDetails(Product $product)
     {
         try {
-            return view('productDetails', compact('product'));
+            $products = Product::where('hidden', false)->inRandomOrder()->get();
+            return view('productDetails', compact('product','products'));
         } catch (\Exception $e) {
             dd($e);
         }

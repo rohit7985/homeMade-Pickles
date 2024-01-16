@@ -17,6 +17,12 @@
                             {{ session('error') }}
                         </div>
                     @endif
+                    @if (session('otpExpr'))
+                        <div class="alert alert-danger">
+                            {{ session('otpExpr') }}
+                            <p>Click Here to <a href="{{ route('resend.otp', session('user')->id) }}">resend OTP</a></p>
+                        </div>
+                    @endif
                     @if ($errors->has('otp'))
                         <div class="alert alert-danger">
                             <p>{{ $errors->first('otp') }}</p>
@@ -42,21 +48,26 @@
                             </div>
                         </form>
                     @else
-                    <form action="{{ route('user.login') }}" method="post">
-                        @csrf
-                        <div class="position-relative mx-auto mb">
-                            <input class="form-control border-2 border-secondary w-75 py-3 px-4 rounded-pill" type="email"
-                                name="email" placeholder="Enter Email">
-                        </div>
-                        <div class="position-relative mx-auto mb">
-                            <input class="form-control border-2 border-secondary w-75 py-3 px-4 rounded-pill"
-                                name="password" type="password" placeholder="Enter Password">
-                        </div>
-                        <div class="position-relative mx-auto mb">
-                            <input class="btn border border-secondary text-primary rounded-pill px-4 py-3" type="submit"
-                                value="Login">
-                        </div>
-                    </form>
+                    <h3 id="emailError" style="display: none; color: red;">Please enter a valid email.</h3>
+                    <h3 id="passwordError" style="display: none; color: red;">Password must be at least 8 characters.</h3>
+
+                        <form id="loginForm" action="{{ route('user.login') }}" method="post">
+                            @csrf
+                            <div class="position-relative mx-auto mb">
+                                <input class="form-control border-2 border-secondary w-75 py-3 px-4 rounded-pill"
+                                    type="email" name="email" placeholder="Enter Email"
+                                    ><!-- 'required' attribute for HTML5 email validation -->
+                            </div>
+                            <div class="position-relative mx-auto mb">
+                                <input class="form-control border-2 border-secondary w-75 py-3 px-4 rounded-pill"
+                                    name="password" type="password" placeholder="Enter Password"
+                                    ><!-- 'required' attribute for password validation -->
+                            </div>
+                            <div class="position-relative mx-auto mb">
+                                <input class="btn border border-secondary text-primary rounded-pill px-4 py-3"
+                                    type="submit" value="Login">
+                            </div>
+                        </form>
                     @endif
                     <h4 class=" text-secondary">Don't have an account? <a
                             href="{{ route('view.registration') }}">Registration</a></h4>
@@ -93,3 +104,41 @@
     <!-- Hero End -->
 
 @endsection
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        document.getElementById('loginForm').addEventListener('submit', function(event) {
+            const email = document.querySelector('input[name="email"]').value;
+            const password = document.querySelector('input[name="password"]').value;
+            const emailError = document.getElementById('emailError');
+            const passwordError = document.getElementById('passwordError');
+
+            emailError.style.display = 'none'; // Hide error messages by default
+            passwordError.style.display = 'none';
+
+            if (email === '') {
+                event.preventDefault();
+                emailError.style.display = 'block'; // Show email error message
+            } else if (!isValidEmail(email)) {
+                event.preventDefault();
+                emailError.style.display = 'block'; // Show invalid email format message
+            }
+
+            if (password === '') {
+                event.preventDefault();
+                passwordError.style.display = 'block'; // Show password error message
+            } else if (password.length < 8) {
+                event.preventDefault();
+                passwordError.style.display = 'block'; // Show password length error message
+            }
+        });
+
+        function isValidEmail(email) {
+            // Regular expression for basic email validation
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            return emailRegex.test(email);
+        }
+    });
+</script>
+
+

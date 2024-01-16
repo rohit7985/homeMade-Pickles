@@ -6,9 +6,12 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use App\Models\User;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Validation\ValidationException;
 use Illuminate\Support\Facades\Mail;
 use App\Mail\SendMail;
+use Illuminate\Support\Facades\Session;
+use App\Models\Cart;
+use App\Models\Order;
+use App\Models\Address;
 use App\Models\userOTP;
 
 class UserController extends Controller
@@ -26,7 +29,7 @@ class UserController extends Controller
                 'email' => $validatedData['email'],
                 'password' => Hash::make($validatedData['password']),
             ]);
-            $otp = rand(1000, 9999);
+            $otp = rand(100000, 999999);
             userOTP::create([
                 'user_id' => $user->id,
                 'email' => $user->email,
@@ -38,12 +41,13 @@ class UserController extends Controller
                 'title' => 'Varification',
                 'body' => 'Varification for OTP ',
                 'otp' => $otp,
+                'name' => $user->name,
             ];
             Mail::to('rahulpatel979503@gmail.com')->send(new SendMail($mailData));
             if ($request->createdBy && $request->createdBy == 'Admin') {
                 return redirect('/admin/customers');
             } else {
-                return view('login',compact('user'));
+                return view('login', compact('user'));
             }
         } catch (\Exception $e) {
             dd($e);
@@ -57,10 +61,9 @@ class UserController extends Controller
                 ->where('email', $request->email)
                 ->latest()
                 ->first();
-
             if ($storedOtp && $request->otp == $storedOtp->otp) {
-                $storedOtp->delete(); 
-                $user = User::where('user_id', $request->user_id)->first();
+                $storedOtp->delete();
+                $user = User::where('id', $request->user_id)->first();
                 if ($user) {
                     $user->status = '1';
                     $user->save();
@@ -83,13 +86,35 @@ class UserController extends Controller
             ]);
             if (Auth::attempt($credentials)) {
                 $user = Auth::user();
-                if($user->status == '1'){
+                $cartItems = Cart::with('product')->where('user_id', $user->id)->get();
+                $cartItemCount = $cartItems->count();
+                $otpVerified = userOTP::where('user_id', $user->id)->first();
+                if ($user->status == '1') {
                     return redirect()->route('home');
-                }else{
-                    return redirect()->route('login.view')->with('error', 'Invalid User');
-                }  
+                } elseif ($otpVerified) {
+                    $currentTime = time();
+                    $createdAtTimestamp = strtotime($otpVerified->created_at);
+                    $isValid = $currentTime - $createdAtTimestamp;
+                    if ($isValid > 305) {
+                        return redirect()->route('login.view')->with(['otpExpr' => 'Your OTP has Expired, Send OTP Again', 'user' => $user,'cartItemCount' => $cartItemCount]);
+                    }
+                } else {
+                    return redirect()->route('login.view')->with('error', 'Rejected User Found, Please Contact to the Admin');
+                }
             }
             return redirect()->route('login.view')->with('error', 'Invalid Credentials');
+        } catch (\Exception $e) {
+            dd($e);
+        }
+    }
+
+    public function showUserDetails($id)
+    {
+        try {
+            $user = User::where('id', $id)->first();
+            $addresses = Address::where('user_id', $id)->get();
+            $orders = Order::where('customer_id',$id)->get();
+            return view('admin.viewCustomerDetails', compact('user','addresses','orders'));
         } catch (\Exception $e) {
             dd($e);
         }
@@ -100,6 +125,31 @@ class UserController extends Controller
         try {
             Auth::logout();
             return redirect('/login')->with('success', 'User Logout Successfuly');
+        } catch (\Exception $e) {
+            dd($e);
+        }
+    }
+
+    public function resendOTP($userId)
+    {
+        try {
+            $userOTP = userOTP::where('user_id', $userId)->first();
+            $user = User::where('id', $userId)->first();
+            if ($userOTP) {
+                $newOTP = mt_rand(100000, 999999);
+                $userOTP->otp = $newOTP;
+                $userOTP->save();
+                $mailData = [
+                    'title' => 'Varification',
+                    'body' => 'Varification for OTP ',
+                    'otp' => $newOTP,
+                    'name' => $user->name,
+                ];
+                Mail::to('rahulpatel979503@gmail.com')->send(new SendMail($mailData));
+                return view('login', compact('user'));
+            } else {
+                return redirect()->route('login.view')->with('error', 'User not found!');
+            }
         } catch (\Exception $e) {
             dd($e);
         }

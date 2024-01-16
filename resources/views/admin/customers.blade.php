@@ -15,6 +15,21 @@
                                 <a href="" class="btn btn-outline-dark m-1" id="openModal">+ Add Customer</a>
                             </div>
                         </div>
+                        <div class="col-lg-6 d-flex align-items-strech">
+                            <form method="POST" action={{ route('filter.customer') }} enctype="multipart/form-data">
+                                @csrf
+                                <div class="mb-3">
+                                    <label for="product" class="form-label">Approval Status</label>
+                                    <select id="status" name="status" class="form-control">
+                                        <option value="0">Pending</option>
+                                        <option value="1">Approved</option>
+                                        <option value="2">Disapproved</option>
+                                    </select>
+                                </div>
+                                <button type="submit" class="btn btn-primary">Search</button>
+                                <a href="{{route('admin.view.customers')}}" class="btn btn-primary">Show All</a>
+                            </form>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -30,8 +45,8 @@
                             <input type="hidden" name="createdBy" value="Admin">
                             <div class="mb-3">
                                 <label for="username" class="form-label">Name:</label>
-                                <input type="text" class="form-control" id="username"
-                                    aria-describedby="emailHelp" name="name" required>
+                                <input type="text" class="form-control" id="username" aria-describedby="emailHelp"
+                                    name="name" required>
                                 @error('name')
                                     <span>{{ $message }}</span>
                                 @enderror
@@ -46,14 +61,13 @@
                             </div>
                             <div class="mb-4">
                                 <label for="exampleInputPassword1" class="form-label">Password:</label>
-                                <input type="password" class="form-control" id="exampleInputPassword1"
-                                    name="password" required>
+                                <input type="password" class="form-control" id="exampleInputPassword1" name="password"
+                                    required>
                                 @error('password')
                                     <span>{{ $message }}</span>
                                 @enderror
                             </div>
-                            <input type="submit" class="btn btn-primary w-100 py-8 fs-4 mb-4 rounded"
-                                value="Add">
+                            <input type="submit" class="btn btn-primary w-100 py-8 fs-4 mb-4 rounded" value="Add">
                         </form>
                     </div>
                 </div>
@@ -80,7 +94,7 @@
                                 <thead class="text-dark fs-4">
                                     <tr>
                                         <th class="border-bottom-0">
-                                            <h6 class="fw-semibold mb-0">Id</h6>
+                                            <h6 class="fw-semibold mb-0">S.No.</h6>
                                         </th>
                                         <th class="border-bottom-0">
                                             <h6 class="fw-semibold mb-0">Name</h6>
@@ -94,11 +108,11 @@
                                         <th class="border-bottom-0">
                                             <h6 class="fw-semibold mb-0">Approval Status</h6>
                                         </th>
-                                        
+
                                         <th class="border-bottom-0">
                                             <h6 class="fw-semibold mb-0">Action</h6>
                                         </th>
-                                        
+
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -108,7 +122,7 @@
                                                 <h6 class="fw-semibold mb-0">{{ $loop->iteration }}</h6>
                                             </td>
                                             <td class="border-bottom-0">
-                                                <h6 class="fw-semibold mb-0">{{ $customer->name }}</h6>
+                                                <a href="{{route('customer.details', $customer->id)}}" class="fw-semibold mb-0">{{ $customer->name }}</a>
                                             </td>
                                             <td class="border-bottom-0">
                                                 <h6 class="fw-semibold mb-0">{{ $customer->email }}</h6>
@@ -117,18 +131,17 @@
                                                 <h6 class="fw-semibold mb-0">{{ $customer->mobile_number }}</h6>
                                             </td>
                                             <td class="border-bottom-0">
-                                                <h6 class="fw-semibold mb-0" style="
-                                                    @if($customer->status == '0')
-                                                        color: blue; /* Change color for Pending */
+                                                <h6 class="fw-semibold mb-0"
+                                                    style="
+                                                    @if ($customer->status == '0') color: blue; /* Change color for Pending */
                                                     @elseif($customer->status == '1')
                                                         color: green; /* Change color for Approved */
                                                     @elseif($customer->status == '2')
                                                         color: red; /* Change color for Disapproved */
                                                     @else
-                                                        color: black; /* Default color for unknown status */
-                                                    @endif
+                                                        color: black; /* Default color for unknown status */ @endif
                                                 ">
-                                                    @if($customer->status == '0')
+                                                    @if ($customer->status == '0')
                                                         Pending
                                                     @elseif($customer->status == '1')
                                                         Approved
@@ -139,32 +152,35 @@
                                                     @endif
                                                 </h6>
                                             </td>
-                                            
-                                            
-                                            
+
+
+
                                             <td class="border-bottom-0">
-                                                <a href="#" class="fw-semibold mb-0 fs-4"
-                                                    data-bs-toggle="dropdown" aria-expanded="false"><i
-                                                        class="fa fa-ellipsis-v" aria-hidden="false"></i>
+                                                <a href="#" class="fw-semibold mb-0 fs-4" data-bs-toggle="dropdown"
+                                                    aria-expanded="false"><i class="fa fa-ellipsis-v"
+                                                        aria-hidden="false"></i>
                                                 </a>
                                                 <ul class="dropdown-menu dropdown-menu-end">
                                                     <li>
-                                                        <a href="#" class="fw-semibold mb-0 fs-4 delete-product" data-product-id="{{ $customer->id }}">
+                                                        <a href="#" class="fw-semibold mb-0 fs-4 delete-product"
+                                                            data-product-id="{{ $customer->id }}">
                                                             <i class="fa fa-trash pd-l" aria-hidden="true"></i>Delete
                                                         </a>
                                                     </li>
                                                     <li>
-                                                        <a href="#" class="fw-semibold mb-0 fs-4 change-status" data-product-id="{{ $customer->id }}">
-                                                            <i class="fa fa-check-square pd-l" aria-hidden="true"></i>Change Status
+                                                        <a href="#" class="fw-semibold mb-0 fs-4 change-status"
+                                                            data-product-id="{{ $customer->id }}">
+                                                            <i class="fa fa-check-square pd-l"
+                                                                aria-hidden="true"></i>Change Status
                                                         </a>
                                                     </li>
-                                                    
+
                                                     {{-- <li>
                                                         <a href="{{ route('customer.edit', $customer->id) }}" class="fw-semibold mb-0 fs-4">
                                                             <i class="fas fa-pencil-alt pd-l"></i> Edit
                                                         </a>
                                                     </li> --}}
-                                                  </ul>
+                                                </ul>
                                             </td>
                                         </tr>
                                     @endforeach
@@ -204,18 +220,18 @@
 
     <script>
         document.getElementById('openModal').addEventListener('click', function(e) {
-            e.preventDefault(); 
+            e.preventDefault();
             var modal = document.getElementById('myModal');
-            modal.style.display = 'block'; 
+            modal.style.display = 'block';
         });
-            window.onclick = function(event) {
+        window.onclick = function(event) {
             var modal = document.getElementById('myModal');
             if (event.target == modal) {
                 modal.style.display = 'none';
             }
         }
     </script>
-     <script>
+    <script>
         $(document).on('click', '.delete-customer', function(e) {
             e.preventDefault();
             var customerId = $(this).data('customer-id');
@@ -235,10 +251,10 @@
         });
     </script>
 
-     <script>
+    <script>
         $(document).on('click', '.change-status', function(e) {
             e.preventDefault();
-            var customerId = $(this).data('product-id'); 
+            var customerId = $(this).data('product-id');
             $.ajax({
                 url: '/admin/customer/update/' + customerId,
                 type: 'PATCH',
@@ -253,9 +269,9 @@
                 }
             });
         });
-    </script> 
+    </script>
 
-     {{-- <script>
+    {{-- <script>
         $(document).ready(function() {
             $('.toggle-hidden').on('click', function(e) {
                 e.preventDefault();

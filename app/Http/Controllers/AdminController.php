@@ -24,4 +24,17 @@ class AdminController extends Controller
             dd($e);
         }
     }
+
+    public function filter(Request $request)
+    {
+        try {
+            $status = $request->input('status');
+            $customers = User::where('status', $status)
+            ->orderBy('created_at', 'desc')
+            ->paginate(10);
+            return view('admin.customers', compact('customers'));
+                } catch (\Exception $e) {
+            dd($e);
+        }
+    }
 }

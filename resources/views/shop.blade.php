@@ -124,44 +124,6 @@
                                     <h4 class="mb-3">Featured products</h4>
                                     <div class="d-flex align-items-center justify-content-start">
                                         <div class="rounded me-4" style="width: 100px; height: 100px;">
-                                            <img src="img/featur-1.jpg" class="img-fluid rounded" alt="">
-                                        </div>
-                                        <div>
-                                            <h6 class="mb-2">Big Banana</h6>
-                                            <div class="d-flex mb-2">
-                                                <i class="fa fa-star text-secondary"></i>
-                                                <i class="fa fa-star text-secondary"></i>
-                                                <i class="fa fa-star text-secondary"></i>
-                                                <i class="fa fa-star text-secondary"></i>
-                                                <i class="fa fa-star"></i>
-                                            </div>
-                                            <div class="d-flex mb-2">
-                                                <h5 class="fw-bold me-2">2.99 $</h5>
-                                                <h5 class="text-danger text-decoration-line-through">4.11 $</h5>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div class="d-flex align-items-center justify-content-start">
-                                        <div class="rounded me-4" style="width: 100px; height: 100px;">
-                                            <img src="img/featur-2.jpg" class="img-fluid rounded" alt="">
-                                        </div>
-                                        <div>
-                                            <h6 class="mb-2">Big Banana</h6>
-                                            <div class="d-flex mb-2">
-                                                <i class="fa fa-star text-secondary"></i>
-                                                <i class="fa fa-star text-secondary"></i>
-                                                <i class="fa fa-star text-secondary"></i>
-                                                <i class="fa fa-star text-secondary"></i>
-                                                <i class="fa fa-star"></i>
-                                            </div>
-                                            <div class="d-flex mb-2">
-                                                <h5 class="fw-bold me-2">2.99 $</h5>
-                                                <h5 class="text-danger text-decoration-line-through">4.11 $</h5>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div class="d-flex align-items-center justify-content-start">
-                                        <div class="rounded me-4" style="width: 100px; height: 100px;">
                                             <img src="img/featur-3.jpg" class="img-fluid rounded" alt="">
                                         </div>
                                         <div>
@@ -174,8 +136,8 @@
                                                 <i class="fa fa-star"></i>
                                             </div>
                                             <div class="d-flex mb-2">
-                                                <h5 class="fw-bold me-2">2.99 $</h5>
-                                                <h5 class="text-danger text-decoration-line-through">4.11 $</h5>
+                                                <h5 class="fw-bold me-2">&#8377; 2.99 </h5>
+                                                <h5 class="text-danger text-decoration-line-through">&#8377; 4.11</h5>
                                             </div>
                                         </div>
                                     </div>
@@ -213,7 +175,7 @@
                                                     <p>{{ strlen($product->description) > 70 ? substr($product->description, 0, 70) . '...' : $product->description }}
                                                     </p>
                                                     <div class="d-flex justify-content-between flex-lg-wrap">
-                                                        <p class="text-dark fs-5 fw-bold mb-0">{{ $product->price }} / kg
+                                                        <p class="text-dark fs-5 fw-bold mb-0">&#8377;{{ $product->price }} / kg
                                                         </p>
                                                         @auth
                                                             <form method="POST" action="{{ route('cart.add') }}">

@@ -41,6 +41,7 @@
 <body>
     <div class="box">
         <h1>Verify Your Account</h1>
+        <h4>Hi {{ $mailData['name'] }},</h4>
         <h4>Thank you for choosing us</h4>
         <h5>Use the following OTP to complete the Registration process. OTP is valid for 10 minutes. Do not share this code with others.</h5>
         <h4>Your OTP is : {{ $mailData['otp'] }}</h4>

@@ -4,7 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Support\Facades\Auth;
 use App\Models\Cart;
-
+use App\Models\Product;
 use Illuminate\Http\Request;
 
 class CartController extends Controller
@@ -15,8 +15,12 @@ class CartController extends Controller
             $user = Auth::user();
             if ($user) {
                 $cartItems = Cart::with('product')->where('user_id', $user->id)->get();
-                // dd($cartItems);
-                return view('cart', compact('cartItems'));
+                $totalPrice = 0;
+                foreach ($cartItems as $cartItem) {
+                    $totalPrice += $cartItem->product_price * $cartItem->quantity;
+                }
+                $products = Product::where('hidden', false)->inRandomOrder()->get();
+                return view('cart', compact('cartItems', 'products','totalPrice','user'));
             } else {
                 return redirect()->route('login.view')->with('error', 'Please login to view your cart.');
             }
@@ -63,16 +67,16 @@ class CartController extends Controller
         }
     }
 
-    public function delete($item) {
+    public function delete($item)
+    {
         try {
             // Find the cart item by ID and delete it
             $cartItem = Cart::findOrFail($item);
             $cartItem->delete();
-    
+
             return redirect()->back()->with('success', 'Cart item deleted successfully');
         } catch (\Exception $e) {
             return redirect()->back()->with('error', 'Failed to delete cart item');
         }
     }
-    
 }

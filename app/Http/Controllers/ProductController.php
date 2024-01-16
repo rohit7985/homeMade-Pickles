@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Cart;
 use Illuminate\Http\Request;
 use App\Models\Product;
 
@@ -86,13 +87,22 @@ class ProductController extends Controller
 
     public function updateQuantity(Request $request)
 {
+    try {
     $productId = $request->input('product_id');
     $newQuantity = $request->input('new_quantity');
-    try {
-        $product = Product::findOrFail($productId);
-        $product->quantity = $newQuantity;
-        $product->save();
-        return response()->json(['updatedQuantity' => $product->quantity]);
+    $from = $request->input('from');
+        if($from == 'Admin'){
+            $product = Product::findOrFail($productId);
+            $product->quantity = $newQuantity;
+            $product->save();
+            return response()->json(['updatedQuantity' => $product->quantity]);
+        }else{
+            $product = Cart::findOrFail($productId);
+            $product->quantity = $newQuantity;
+            $product->save();
+            return response()->json(['updatedQuantity' => $product->quantity]);
+        }
+
     } catch (\Exception $e) {
         return response()->json(['error' => $e->getMessage()], 500);
     }
