@@ -79,8 +79,7 @@
                         </div>
                         <div class="mb-3">
                             <label for="image" class="form-label">Image</label>
-                            <input type="file" step="0.01" class="form-control" id="image" name="image"
-                                required>
+                            <input type="file" class="form-control" id="image" name="image[]"  multiple accept="image/*" required>
                         </div>
                         <div class="mb-3">
                             <label for="ribbon" class="form-label">Ribbon</label>

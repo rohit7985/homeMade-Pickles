@@ -43,7 +43,8 @@ class UserController extends Controller
                 'otp' => $otp,
                 'name' => $user->name,
             ];
-            Mail::to('rahulpatel979503@gmail.com')->send(new SendMail($mailData));
+            $subject = 'Home Made Pickles : Account Varification';
+            Mail::to('rahulpatel979503@gmail.com')->send(new SendMail($mailData, $subject));
             if ($request->createdBy && $request->createdBy == 'Admin') {
                 return redirect('/admin/customers');
             } else {
@@ -96,7 +97,7 @@ class UserController extends Controller
                     $createdAtTimestamp = strtotime($otpVerified->created_at);
                     $isValid = $currentTime - $createdAtTimestamp;
                     if ($isValid > 305) {
-                        return redirect()->route('login.view')->with(['otpExpr' => 'Your OTP has Expired, Send OTP Again', 'user' => $user,'cartItemCount' => $cartItemCount]);
+                        return redirect()->route('login.view')->with(['otpExpr' => 'Your OTP has Expired, Send OTP Again', 'user' => $user, 'cartItemCount' => $cartItemCount]);
                     }
                 } else {
                     return redirect()->route('login.view')->with('error', 'Rejected User Found, Please Contact to the Admin');
@@ -113,8 +114,23 @@ class UserController extends Controller
         try {
             $user = User::where('id', $id)->first();
             $addresses = Address::where('user_id', $id)->get();
-            $orders = Order::where('customer_id',$id)->get();
-            return view('admin.viewCustomerDetails', compact('user','addresses','orders'));
+            $orders = Order::where('customer_id', $id)->get();
+            return view('admin.viewCustomerDetails', compact('user', 'addresses', 'orders'));
+        } catch (\Exception $e) {
+            dd($e);
+        }
+    }
+
+    public function searchUser(Request $request)
+    {
+        try {
+            $query = $request->input('query');
+            if($query != ''){
+                $users = User::where('name', 'like', '%' . $query . '%')->get();
+            }else{
+                $users = User::where('name',$query)->get();
+            }
+            return response()->json($users);
         } catch (\Exception $e) {
             dd($e);
         }
@@ -145,7 +161,8 @@ class UserController extends Controller
                     'otp' => $newOTP,
                     'name' => $user->name,
                 ];
-                Mail::to('rahulpatel979503@gmail.com')->send(new SendMail($mailData));
+                $subject = 'Home Made Pickles : Account Varification';
+                Mail::to('rahulpatel979503@gmail.com')->send(new SendMail($mailData, $subject));
                 return view('login', compact('user'));
             } else {
                 return redirect()->route('login.view')->with('error', 'User not found!');

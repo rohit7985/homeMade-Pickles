@@ -9,8 +9,13 @@ use App\Http\Controllers\ProductController;
 use App\Http\Controllers\shopController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\AddressController;
+use App\Http\Controllers\Admin\CategoryController;
+use App\Http\Controllers\Admin\DashboardController;
+use App\Http\Controllers\Admin\OrderController;
 use App\Http\Controllers\RatingReviewController;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\Auth\ForgotPasswordController;
+use App\Http\Controllers\Auth\ResetPasswordController;
 
 /*
 |--------------------------------------------------------------------------
@@ -31,12 +36,15 @@ Route::get('/user/registration', function () {
     return view('registration');
 })->name('view.registration');
 
-Route::get('/login',[shopController::class,'viewLogin'])->name('login.view');
+Route::get('/login', [shopController::class, 'viewLogin'])->name('login.view');
 
 
 
-Route::get('/shop',[shopController::class,'index'])->name('shop');
-Route::get('/product/{product}/details',[shopController::class,'productDetails'])->name('product.details');
+Route::get('/shop', [shopController::class, 'index'])->name('shop');
+
+Route::post('/productSearch', [ProductController::class, 'productSearch'])->name('productSearch');
+Route::post('/search/product', [ProductController::class, 'search'])->name('search.product');
+Route::get('/product/{product}/details', [shopController::class, 'productDetails'])->name('product.details');
 
 
 Route::post('/user/create', [UserController::class, 'createUser'])->name('users.create');
@@ -44,6 +52,11 @@ Route::post('/user/login', [UserController::class, 'login'])->name('user.login')
 Route::post('/user/verify-otp', [UserController::class, 'verifyOtp'])->name('otp.verify');
 Route::get('/user/resend-otp/{userId}', [UserController::class, 'resendOTP'])->name('resend.otp');
 
+Route::post('/send-reset-password-link', [ForgotPasswordController::class, 'sendResetLinkEmail'])->name('send.resetPasswordLink');
+
+Route::get('/reset-password/{token}', [ResetPasswordController::class, 'showResetForm'])->name('password.reset');
+
+Route::post('/reset-password', [ResetPasswordController::class, 'reset'])->name('password.update');
 
 
 
@@ -55,14 +68,20 @@ Route::post('/loginData', [LoginController::class, 'adminLogin'])->name('admin.l
 
 
 Route::middleware('auth.user')->prefix('customer')->group(function () {
-    Route::get('/cart',[CartController::class,'showUserCart'])->name('customer.cart');
+    Route::get('/cart', [CartController::class, 'showUserCart'])->name('customer.cart');
     Route::post('/cart/add', [CartController::class, 'addToCart'])->name('cart.add');
     Route::delete('/cart/{item}', [CartController::class, 'delete'])->name('cartItem.delete');
     Route::post('/updateQuantity', [ProductController::class, 'updateQuantity'])->name('update.quantity');
 
 
 
+
+
+
+
     Route::get('/myProfile', [CustomerProfileController::class, 'myProfile'])->name('user.myProfile');
+    Route::post('/add/contact', [CustomerProfileController::class, 'addContact'])->name('add.contact');
+
     Route::get('/myOrder', [CustomerProfileController::class, 'myOrder'])->name('customer.myOrder');
     Route::post('/myOrder/store', [CustomerOrderController::class, 'store'])->name('complete.customerOrder');
 
@@ -76,19 +95,20 @@ Route::middleware('auth.user')->prefix('customer')->group(function () {
     Route::delete('/address/{address}', [AddressController::class, 'destroy'])->name('address.destroy');
     Route::get('/edit-address/{id}', [AddressController::class, 'editAddress'])->name('edit.address');
     Route::post('/address/update', [AddressController::class, 'update'])->name('address.update');
-
-
-
-
-
 });
 
 
 Route::middleware('auth:admin')->prefix('admin')->group(function () {
 
-    Route::get('/dashboard', function () {
-        return view('admin.index');
-    })->name('admin.dashboard');
+    // Route::get('/dashboard', function () {
+    //     return view('admin.index');
+    // })->name('admin.dashboard');
+
+    Route::get('/dashboard', [DashboardController::class, 'index'])->name('admin.dashboard');
+    Route::get('/myProfile', [AdminController::class, 'myProfile'])->name('admin.myProfile');
+    Route::post('/change-email', [AdminController::class, 'changeEmail'])->name('change.email');
+
+
 
     Route::get('/registration', function () {
         return view('admin.register');
@@ -98,6 +118,11 @@ Route::middleware('auth:admin')->prefix('admin')->group(function () {
         return view('admin.addProduct');
     })->name('admin.addProduct');
 
+    Route::get('/view/categories', [CategoryController::class, 'index'])->name('admin.view.categories');
+    Route::post('/category/store', [CategoryController::class, 'store'])->name('admin.category.store');
+
+
+
     Route::post('/products/toggle-hidden/{id}', [ProductController::class, 'toggleHiddenStatus'])->name('admin.toggleHiddenStatus');
     Route::post('/updateQuantity', [ProductController::class, 'updateQuantity'])->name('update.quantity');
 
@@ -105,27 +130,33 @@ Route::middleware('auth:admin')->prefix('admin')->group(function () {
     Route::get('/logout', [LoginController::class, 'logout'])->name('admin.logout');
     Route::post('/register', [LoginController::class, 'register'])->name('admin.register');
 
-    Route::get('/products',[ProductController::class, 'index'])->name('admin.products');
+    Route::get('/orders', [OrderController::class, 'index'])->name('admin.orders');
+    Route::any('/filter/orders', [OrderController::class, 'filterOrders'])->name('filter.order');
+    Route::get('/order/mark-completed/{id}', [OrderController::class, 'markCompleted'])->name('admin.order.markCompleted');
+
+
+    Route::get('/products', [ProductController::class, 'index'])->name('admin.products');
     Route::post('/products/store', [ProductController::class, 'store'])->name('products.store');
     Route::delete('/products/{product}', [ProductController::class, 'destroy'])->name('products.destroy');
     Route::get('/products/{editProduct}/edit', [ProductController::class, 'edit'])->name('products.edit');
     Route::put('/products/{product}/update', [ProductController::class, 'update'])->name('products.update');
+    Route::post('/search/product', [OrderController::class, 'searchProduct'])->name('search.products');
+    Route::any('/products/filter', [AdminController::class, 'filterProducts'])->name('filter.products');
 
-    Route::get('/customers',[UserController::class, 'viewCustomers'])->name('admin.view.customers');
+
+
+    Route::get('/customers', [UserController::class, 'viewCustomers'])->name('admin.view.customers');
     Route::post('/user/create', [UserController::class, 'createUser'])->name('admin.user.create');
     Route::delete('/customer/{customer}', [UserController::class, 'destroy'])->name('customer.destroy');
     Route::patch('/customer/update/{id}', [AdminController::class, 'updateStatus']);
     Route::any('/filter/customer', [AdminController::class, 'filter'])->name('filter.customer');
+    Route::post('/customer/approve', [AdminController::class, 'approveSelectedCustomers'])->name('admin.customer.approve');
+    // routes/web.php
+
+    Route::get('/customer/approve-all-pending', [AdminController::class, 'approveAllPending'])->name('admin.approveAllPending');
+
+
 
     Route::get('/customer/{id}', [UserController::class, 'showUserDetails'])->name('customer.details');
-
-
-
-
-
-
-
-
-
+    Route::post('/search/user', [UserController::class, 'searchUser'])->name('search.user');
 });
-

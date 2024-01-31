@@ -48,30 +48,66 @@
                             </div>
                         </form>
                     @else
-                    <h3 id="emailError" style="display: none; color: red;">Please enter a valid email.</h3>
-                    <h3 id="passwordError" style="display: none; color: red;">Password must be at least 8 characters.</h3>
+                        <h3 id="emailError" style="display: none; color: red;">Please enter a valid email.</h3>
+                        <h3 id="passwordError" style="display: none; color: red;">Password must be at least 8 characters.
+                        </h3>
 
                         <form id="loginForm" action="{{ route('user.login') }}" method="post">
                             @csrf
                             <div class="position-relative mx-auto mb">
                                 <input class="form-control border-2 border-secondary w-75 py-3 px-4 rounded-pill"
-                                    type="email" name="email" placeholder="Enter Email"
-                                    ><!-- 'required' attribute for HTML5 email validation -->
+                                    type="email" name="email"
+                                    placeholder="Enter Email"><!-- 'required' attribute for HTML5 email validation -->
                             </div>
                             <div class="position-relative mx-auto mb">
                                 <input class="form-control border-2 border-secondary w-75 py-3 px-4 rounded-pill"
-                                    name="password" type="password" placeholder="Enter Password"
-                                    ><!-- 'required' attribute for password validation -->
+                                    name="password" type="password"
+                                    placeholder="Enter Password"><!-- 'required' attribute for password validation -->
                             </div>
                             <div class="position-relative mx-auto mb">
                                 <input class="btn border border-secondary text-primary rounded-pill px-4 py-3"
                                     type="submit" value="Login">
+                                <a href="#" data-bs-toggle="modal" data-bs-target="#exampleModal">
+                                    Forgot Password?
+                                </a>
                             </div>
                         </form>
                     @endif
                     <h4 class=" text-secondary">Don't have an account? <a
                             href="{{ route('view.registration') }}">Registration</a></h4>
                 </div>
+
+                <!--Address Form Modal -->
+                <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel"
+                    aria-hidden="true">
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title" id="exampleModalLabel">Contact Details Form</h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                    aria-label="Close"></button>
+                            </div>
+                            <div class="modal-body">
+                                <form action="{{ route('send.resetPasswordLink') }}" method="POST">
+                                    @csrf
+                                    <div class="mb-3">
+                                        <label for="mobile_number" class="form-label">Email</label>
+                                        <div class="input-group">
+                                            <input type="text" class="form-control" placeholder="Enter Email"
+                                                name="email" id="email" aria-describedby="basic-addon1">
+                                        </div>
+                                    </div>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                                <button type="submit" class="btn btn-primary">Submit</button>
+                            </div>
+                            </form>
+                        </div>
+                    </div>
+
+                </div>
+
                 <div class="col-md-12 col-lg-5">
                     <div id="carouselId" class="carousel slide position-relative" data-bs-ride="carousel">
                         <div class="carousel-inner" role="listbox">
@@ -140,5 +176,3 @@
         }
     });
 </script>
-
-

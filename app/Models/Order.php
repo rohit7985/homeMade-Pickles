@@ -22,18 +22,23 @@ class Order extends Model
         return $this->hasMany(RatingReview::class);
     }
 
+    public function customer()
+    {
+        return $this->belongsTo(User::class, 'customer_id');
+    }
+
     public function getOrderDetailsAttribute()
     {
-
         $order_id = $this->attributes['id'];
-        $details = json_decode($this->attributes['details']);
+        $detail = json_decode($this->attributes['details']);
         $productDetails = [];
-        foreach ($details as $detail) {
+    
+        if ($detail) {
             $product = Product::find($detail->product_id);
             $rating = RatingReview::where('order_id', $order_id)
                 ->where('order_product_id', $detail->product_id)
                 ->first();
-            
+    
             if ($product) {
                 $productDetails[] = [
                     'product_id' => $product->id,
@@ -46,6 +51,8 @@ class Order extends Model
                 ];
             }
         }
+    
         return $productDetails;
     }
+    
 }

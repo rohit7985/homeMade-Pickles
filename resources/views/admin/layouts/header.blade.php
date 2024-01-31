@@ -53,11 +53,27 @@
               </a>
             </li>
             <li class="sidebar-item">
+              <a class="sidebar-link" href={{route('admin.orders')}} aria-expanded="false">
+                <span>
+                  <i class="ti ti-layout-dashboard"></i>
+                </span>
+                <span class="hide-menu">Orders</span>
+              </a>
+            </li>
+            <li class="sidebar-item">
               <a class="sidebar-link" href={{route('admin.view.customers')}} aria-expanded="false">
                 <span>
                   <i class="ti ti-user"></i>
                 </span>
                 <span class="hide-menu">Customers</span>
+              </a>
+            </li>
+            <li class="sidebar-item">
+              <a class="sidebar-link" href={{route('admin.view.categories')}} aria-expanded="false">
+                <span>
+                  <i class="ti ti-user"></i>
+                </span>
+                <span class="hide-menu">Categories</span>
               </a>
             </li>
           </ul>
@@ -94,7 +110,7 @@
                 </a>
                 <div class="dropdown-menu dropdown-menu-end dropdown-menu-animate-up" aria-labelledby="drop2">
                   <div class="message-body">
-                    <a href="javascript:void(0)" class="d-flex align-items-center gap-2 dropdown-item">
+                    <a href="{{route('admin.myProfile')}}" class="d-flex align-items-center gap-2 dropdown-item">
                       <i class="ti ti-user fs-6"></i>
                       <p class="mb-0 fs-3">My Profile</p>
                     </a>

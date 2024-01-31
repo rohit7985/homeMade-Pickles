@@ -1,5 +1,5 @@
 @extends('admin.layouts.main')
-@section('title', 'Admin - Customers')
+@section('title', 'Admin - Categories')
 @section('main-content')
 
     <div class="container-fluid">
@@ -9,10 +9,10 @@
                     <div class="card-body">
                         <div class="d-sm-flex d-block align-items-center justify-content-between mb-9">
                             <div class="mb-3 mb-sm-0">
-                                <h5 class="card-title fw-semibold">Customers</h5>
+                                <h5 class="card-title fw-semibold">Categories</h5>
                             </div>
                             <div class="d-flex align-items-center">
-                                <a href="#" class="btn btn-outline-dark m-1" id="openModal">+ Add Customer</a>
+                                <a href="#" class="btn btn-outline-dark m-1" id="openModal">+ Add Categories</a>
                             </div>
                         </div>
 
@@ -58,35 +58,31 @@
             <div class="modal-content">
                 <div class="card mb-0">
                     <div class="card-body">
-                        <p class="text-center">Add Customer By Admin</p>
-                        <form method="POST" action={{ route('admin.user.create') }}>
+                        <p class="text-center">Add Categories By Admin</p>
+                        <form method="POST" action="{{ route('admin.category.store') }}">
                             @csrf
-                            <input type="hidden" name="createdBy" value="Admin">
                             <div class="mb-3">
-                                <label for="username" class="form-label">Name:</label>
-                                <input type="text" class="form-control" id="username" aria-describedby="emailHelp"
-                                    name="name" required>
-                                @error('name')
+                                <label for="categoryName" class="form-label">Category Name:</label>
+                                <input type="text" class="form-control" id="categoryName" name="categoryName" required>
+                                @error('categoryName')
                                     <span>{{ $message }}</span>
                                 @enderror
                             </div>
                             <div class="mb-3">
-                                <label for="exampleInputEmail1" class="form-label">Email:</label>
-                                <input type="email" class="form-control" id="exampleInputEmail1"
-                                    aria-describedby="emailHelp" name="email" required>
-                                @error('email')
+                                <label for="parentCategory" class="form-label">Parent Category:</label>
+                                <select class="form-control" id="parentCategory" name="parentCategory">
+                                    <option value="">Select Parent Category (if any)</option>
+                                    @foreach ($categories as $category)
+                                        <option value="{{ $category->id }}">{{ $category->name }}</option>
+                                    @endforeach
+                                </select>
+                                @error('parentCategory')
                                     <span>{{ $message }}</span>
                                 @enderror
                             </div>
-                            <div class="mb-4">
-                                <label for="exampleInputPassword1" class="form-label">Password:</label>
-                                <input type="password" class="form-control" id="exampleInputPassword1" name="password"
-                                    required>
-                                @error('password')
-                                    <span>{{ $message }}</span>
-                                @enderror
-                            </div>
-                            <input type="submit" class="btn btn-primary w-100 py-8 fs-4 mb-4 rounded" value="Add">
+                            <input type="hidden" name="categoryLevel" id="categoryLevel" value="1">
+                            <input type="submit" class="btn btn-primary w-100 py-8 fs-4 mb-4 rounded"
+                                value="Add Category or Subcategory">
                         </form>
                     </div>
                 </div>
@@ -108,23 +104,10 @@
                 <div class="card w-100">
                     <div class="card-body p-4">
                         <h5 class="card-title fw-semibold mb-4">Customer Details:</h5>
-                        <a href="#" class="fw-semibold mb-0 fs-4" data-bs-toggle="dropdown" aria-expanded="false"><i
-                                class="fa fa-ellipsis-v" aria-hidden="false"></i>
-                        </a>
-                        <ul class="dropdown-menu dropdown-menu-end">
-                            <li>
-                                <a href="#" class="fw-semibold mb-0 fs-4 approve_all_pending">
-                                    Approve Pending Status
-                                </a>
-                            </li>
-                        </ul>
                         <div class="table-responsive">
                             <table class="table text-nowrap mb-0 align-middle">
                                 <thead class="text-dark fs-4">
                                     <tr>
-                                        <th class="border-bottom-0">
-                                            <h6 class="fw-semibold mb-0">Select</h6>
-                                        </th>
                                         <th class="border-bottom-0">
                                             <h6 class="fw-semibold mb-0">S.No.</h6>
                                         </th>
@@ -132,105 +115,41 @@
                                             <h6 class="fw-semibold mb-0">Name</h6>
                                         </th>
                                         <th class="border-bottom-0">
-                                            <h6 class="fw-semibold mb-0">Email</h6>
+                                            <h6 class="fw-semibold mb-0"></h6>
                                         </th>
                                         <th class="border-bottom-0">
-                                            <h6 class="fw-semibold mb-0">Mobile Number</h6>
+                                            <h6 class="fw-semibold mb-0"></h6>
                                         </th>
-                                        <th class="border-bottom-0">
-                                            <h6 class="fw-semibold mb-0">Approval Status</h6>
-                                        </th>
-
-                                        <th class="border-bottom-0">
-                                            <h6 class="fw-semibold mb-0">Action</h6>
-                                        </th>
-
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    @if ($customers->isEmpty())
+                                    @if ($categories->isEmpty())
                                         <tr>
-                                            <td colspan="6" class="text-center">
-                                                <h4>Result Not Found!</h4>
+                                            <td colspan="4" class="text-center">
+                                                <h4>No Categories Found!</h4>
                                             </td>
                                         </tr>
                                     @else
-                                        @foreach ($customers as $customer)
+                                        @foreach ($categories as $category)
                                             <tr>
                                                 <td class="border-bottom-0">
-                                                    <input type="checkbox" class="approve-checkbox"
-                                                        data-customer-id="{{ $customer->id }}">
+                                                    <h6 class="fw-semibold mb-0">{{ $loop->index +1 }}</h6>
                                                 </td>
                                                 <td class="border-bottom-0">
-                                                    <h6 class="fw-semibold mb-0">
-                                                        {{ $loop->index + $customers->firstItem() }}</h6>
+                                                    <a href="#" class="fw-semibold mb-0">{{ $category->name }}</a>
                                                 </td>
                                                 <td class="border-bottom-0">
-                                                    <a href="{{ route('customer.details', $customer->id) }}"
-                                                        class="fw-semibold mb-0">{{ $customer->name }}</a>
+
                                                 </td>
                                                 <td class="border-bottom-0">
-                                                    <h6 class="fw-semibold mb-0">{{ $customer->email }}</h6>
-                                                </td>
-                                                <td class="border-bottom-0">
-                                                    <h6 class="fw-semibold mb-0">{{ $customer->mobile_number }}</h6>
-                                                </td>
-                                                <td class="border-bottom-0">
-                                                    <h6 class="fw-semibold mb-0"
-                                                        style="
-                                                    @if ($customer->status == '0') color: blue; /* Change color for Pending */
-                                                    @elseif($customer->status == '1')
-                                                        color: green; /* Change color for Approved */
-                                                    @elseif($customer->status == '2')
-                                                        color: red; /* Change color for Disapproved */
-                                                    @else
-                                                        color: black; /* Default color for unknown status */ @endif
-                                                ">
-                                                        @if ($customer->status == '0')
-                                                            Pending
-                                                        @elseif($customer->status == '1')
-                                                            Approved
-                                                        @elseif($customer->status == '2')
-                                                            Disapproved
-                                                        @else
-                                                            Unknown Status
-                                                        @endif
-                                                    </h6>
-                                                </td>
-                                                <td class="border-bottom-0">
-                                                    <a href="#" class="fw-semibold mb-0 fs-4"
-                                                        data-bs-toggle="dropdown" aria-expanded="false"><i
-                                                            class="fa fa-ellipsis-v" aria-hidden="false"></i>
-                                                    </a>
-                                                    <ul class="dropdown-menu dropdown-menu-end">
-                                                        <li>
-                                                            <a href="#" class="fw-semibold mb-0 fs-4 delete-product"
-                                                                data-product-id="{{ $customer->id }}">
-                                                                <i class="fa fa-trash pd-l" aria-hidden="true"></i>Delete
-                                                            </a>
-                                                        </li>
-                                                        <li>
-                                                            <a href="#" class="fw-semibold mb-0 fs-4 change-status"
-                                                                data-product-id="{{ $customer->id }}">
-                                                                <i class="fa fa-check-square pd-l"
-                                                                    aria-hidden="true"></i>Change Status
-                                                            </a>
-                                                        </li>
-                                                        <li>
-                                                            <a href="#" class="fw-semibold mb-0 fs-4 approveAll">
-                                                                <i class="fa fa-check-square pd-l"
-                                                                    aria-hidden="true"></i>Approve Selected
-                                                            </a>
-                                                        </li>
-                                                    </ul>
                                                 </td>
                                             </tr>
-                                        @endforeach
-                                    @endif
+                                            @endforeach
+                                        @endif
                                 </tbody>
                             </table>
                         </div>
-                        <div class="col-12">
+                        {{-- <div class="col-12">
                             <div class="pagination d-flex justify-content-center mt-5">
                                 <!-- Previous Page Link -->
                                 @if ($customers->onFirstPage())
@@ -252,7 +171,7 @@
                                     <a href="#" class="rounded disabled" aria-disabled="true">&raquo;</a>
                                 @endif
                             </div>
-                        </div>
+                        </div> --}}
                     </div>
                 </div>
             </div>
@@ -292,6 +211,13 @@
             });
         });
     </script>
+
+    <script>
+        document.getElementById('parentCategory').addEventListener('change', function() {
+            document.getElementById('categoryLevel').value = this.value ? 2 : 1;
+        });
+    </script>
+
     <script>
         $(document).on('click', '.delete-customer', function(e) {
             e.preventDefault();

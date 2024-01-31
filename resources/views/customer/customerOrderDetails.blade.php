@@ -74,8 +74,18 @@
                                                 </p>
                                             </td>
                                             <td>
-                                                <p>{{ $item['rating'] }}</p>
+                                                @if($item['rating'] >= 1)
+                                                <p>
+                                                    @for ($i = 1; $i <= 5; $i++)
+                                                    @if ($i <=$item['rating'])
+                                                        <i class="fa fa-star text-secondary"></i>
+                                                    @else
+                                                        <i class="fa fa-star"></i>
+                                                    @endif
+                                                @endfor
+                                                </p>
                                                 <p>{{ $item['review'] }}</p>
+                                                @else
                                                 <p class="mb-0 mt-4 total-price">
                                                     <a href="#" data-bs-toggle="modal"
                                                         data-order-id="{{ $order->id }}"
@@ -83,6 +93,7 @@
                                                         data-bs-target="#exampleModal">
                                                         <i class="fa fa-star text-secondary"></i>Rating & Reviews</a>
                                                 </p>
+                                                @endif
                                             </td>
                                         </tr>
                                     @endforeach

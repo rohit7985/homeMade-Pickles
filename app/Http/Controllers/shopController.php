@@ -10,7 +10,7 @@ class shopController extends Controller
     public function index()
     {
         try {
-            $products = Product::where('hidden', false)->orderBy('created_at', 'desc')->paginate(6);
+            $products = Product::getShowProducts();
             return view('shop', compact('products'));
         } catch (\Exception $e) {
             dd($e);
@@ -20,7 +20,7 @@ class shopController extends Controller
     public function productDetails(Product $product)
     {
         try {
-            $products = Product::where('hidden', false)->inRandomOrder()->get();
+            $products = Product::getRandomProducts();
             return view('productDetails', compact('product','products'));
         } catch (\Exception $e) {
             dd($e);
