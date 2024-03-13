@@ -33,3 +33,26 @@
 .rounded {
     border-radius: 10px !important;
 }
+
+.pd-l{
+    padding-left: 16px;
+}
+
+.mt22{
+    margin-top: 22px;
+}
+
+.mt{
+    margin-top: 150px;
+}
+
+.ml{
+    margin-left: 10px;
+}
+.cwh{
+    width: 222px;
+    height: 53px;
+}
+
+
+

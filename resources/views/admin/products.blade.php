@@ -13,9 +13,55 @@
                             </div>
                             <div>
                                 <a href="{{ route('admin.addProduct') }}" class="btn btn-outline-dark m-1">+ Add Product</a>
-                                {{-- <button type="submit" class="btn btn-outline-dark m-1">+ Add Product</button> --}}
                             </div>
                         </div>
+                    </div>
+                    <div class="card-body">
+                        @if ($errors->any())
+                            <div class="alert alert-danger">
+                                <ul>
+                                    @foreach ($errors->all() as $error)
+                                        <li>{{ $error }}</li>
+                                    @endforeach
+                                </ul>
+                            </div>
+                        @endif
+
+                        <form class="row g-3" method="GET" action="{{ route('filter.products') }}"
+                            enctype="multipart/form-data">
+                            @csrf
+                            <div class="col-md-4 mb-3">
+                                <label for="status" class="form-label">Visibility</label>
+                                <select id="visibility" name="visibility" class="form-control">
+                                    <option value="" {{ request('visibility') === null ? 'selected' : '' }}>Select
+                                    </option>
+                                    <option value="0" {{ request('visibility') === '0' ? 'selected' : '' }}>Show
+                                    </option>
+                                    <option value="1" {{ request('visibility') === '1' ? 'selected' : '' }}>Hidden
+                                    </option>
+                                </select>
+                            </div>
+                            <div class="col-md-4 mb-3">
+                                <label for="email" class="form-label">Product</label>
+                                <input type="text" class="form-control" id="product" name="product"
+                                    value="{{ request('product') }}">
+                                <div id="searchProductResults"></div>
+                            </div>
+                            <div class="col-md-4 mb-3">
+                                <label for="minPrice" class="form-label">Price Range</label>
+                                <div class="input-group">
+                                    <input type="range" class="form-range" id="priceRange" name="priceRange"
+                                        min="0" max="1000" step="10"
+                                        value="{{ request('priceRange') ?? 0 }}" oninput="amount.value=priceRange.value">
+                                    <output id="amount" name="amount" min-velue="0" max-value="500"
+                                        for="priceRange">{{ request('priceRange') ?? 0 }}</output>
+                                </div>
+                            </div>
+                            <div class="col-md-4 mb-3" style="margin-top: 46px">
+                                <button type="submit" class="btn btn-primary">Search</button>
+                                <a href="{{ route('admin.products') }}" class="btn btn-primary">Show All</a>
+                            </div>
+                        </form>
                     </div>
                 </div>
             </div>
@@ -46,6 +92,9 @@
                                             <h6 class="fw-semibold mb-0">Product</h6>
                                         </th>
                                         <th class="border-bottom-0">
+                                            <h6 class="fw-semibold mb-0">Merchant</h6>
+                                        </th>
+                                        <th class="border-bottom-0">
                                             <h6 class="fw-semibold mb-0">Price</h6>
                                         </th>
                                         <th class="border-bottom-0">
@@ -58,83 +107,128 @@
                                             <h6 class="fw-semibold mb-0">Quantity</h6>
                                         </th>
                                         <th class="border-bottom-0">
+                                            <h6 class="fw-semibold mb-0">Rating</h6>
+                                        </th>
+                                        <th class="border-bottom-0">
                                             <h6 class="fw-semibold mb-0">Desciption</h6>
                                         </th>
                                         <th class="border-bottom-0">
                                             <h6 class="fw-semibold mb-0">Visibility</h6>
                                         </th>
                                         <th class="border-bottom-0">
-                                            <h6 class="fw-semibold mb-0">Edit</h6>
+                                            <h6 class="fw-semibold mb-0">Action</h6>
                                         </th>
-                                        <th class="border-bottom-0">
-                                            <h6 class="fw-semibold mb-0">Delete</h6>
-                                        </th>
+
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    @foreach ($products as $product)
+                                    @if ($products->isEmpty())
                                         <tr>
-                                            <td class="border-bottom-0">
-                                                <h6 class="fw-semibold mb-0">{{ $loop->iteration }}</h6>
-                                            </td>
-                                            <td class="border-bottom-0">
-                                                <h6 class="fw-semibold mb-1">{{ $product->product }}</h6>
-                                                @if ($product->image)
-                                                    <img src="{{ asset($product->image) }}" alt="Product Image"
-                                                        style="max-width: 100px;" class="">
-                                                @else
-                                                    No Image Available
-                                                @endif
-                                                {{-- <span class="fw-normal"></span> --}}
-                                            </td>
-                                            <td class="border-bottom-0">
-                                                <p class="mb-0 fw-normal">{{ $product->price }} INR</p>
-                                            </td>
-                                            <td class="border-bottom-0">
-                                                <div class="d-flex align-items-center gap-2">
-                                                    <span class="fw-semibold">{{ $product->weight }}</span>
-                                                </div>
-                                            </td>
-                                            <td class="border-bottom-0">
-                                                <h6 class="badge bg-primary rounded-3 fw-semibold mb-0 fs-4">
-                                                    {{ $product->ribbon }}</h6>
-                                            </td>
-                                            <td class="border-bottom-0">
-                                                <div class="d-flex align-items-center">
-                                                    <button class="btn btn-sm btn-secondary me-2"
-                                                        onclick="decreaseQuantity({{ $product->id }})">-</button>
-                                                    <input type="text" id="quantityInput_{{ $product->id }}"
-                                                        value="{{ $product->quantity }}" class="form-control w-min">
-                                                    <button class="btn btn-sm btn-secondary ms-2"
-                                                        onclick="increaseQuantity({{ $product->id }})">+</button>
-                                                </div>
-                                            </td>
-
-                                            <td class="border-bottom-0">
-                                                <h6 class="fw-semibold mb-0 fs-4">
-                                                    {{ strlen($product->description) > 30 ? substr($product->description, 0, 30) . '...' : $product->description }}
-                                                </h6>
-                                            </td>
-                                            <td class="border-bottom-0">
-                                                <a href="#" class="fw-semibold mb-0 fs-4 toggle-hidden"
-                                                    data-product-id="{{ $product->id }}">
-                                                    @if ($product->hidden)
-                                                        <i class="fa fa-eye-slash" aria-hidden="false"></i>
-                                                    @else
-                                                        <i class="fa fa-eye" aria-hidden="false"></i>
-                                                    @endif
-                                                </a>
-                                            </td>
-                                            <td class="border-bottom-0">
-                                                <a href={{ route('products.edit', $product->id) }}
-                                                    class="fw-semibold mb-0 fs-4">Edit</a>
-                                            </td>
-                                            <td class="border-bottom-0">
-                                                <a href="#" class="fw-semibold mb-0 fs-4 delete-product"
-                                                    data-product-id="{{ $product->id }}">Delete</a>
+                                            <td colspan="10" class="text-center">
+                                                <h4>Result Not Found!</h4>
                                             </td>
                                         </tr>
-                                    @endforeach
+                                    @else
+                                        @foreach ($products as $product)
+                                            <tr>
+                                                <td class="border-bottom-0">
+                                                    <h6 class="fw-semibold mb-0">
+                                                        {{ $loop->index + $products->firstItem() }}
+                                                    </h6>
+                                                </td>
+                                                <td class="border-bottom-0">
+                                                    <h6 class="fw-semibold mb-1">{{ $product->product }}</h6>
+                                                    @if ($product->image)
+                                                        <img src="{{ asset($product->image) }}" alt="Product Image"
+                                                            style="max-width: 100px;" class="">
+                                                    @else
+                                                        No Image Available
+                                                    @endif
+                                                    <p class="mb-0 fw-normal">Category: {{ $product->category->category }}
+                                                    </p>
+                                                    <!-- Display Subcategory Name -->
+                                                    <p class="mb-0 fw-normal">Subcategory:
+                                                        {{ $product->subcategory->sub_category }}</p>
+                                                </td>
+                                                <td class="border-bottom-0">
+                                                    <p class="mb-0 fw-normal">{{ $product->merchant->name }}</p>
+                                                </td>
+                                                <td class="border-bottom-0">
+                                                    <p class="mb-0 fw-normal">&#8377;{{ $product->price }}</p>
+                                                </td>
+                                                <td class="border-bottom-0">
+                                                    <div class="d-flex align-items-center gap-2">
+                                                        <span class="fw-semibold">{{ $product->weight }}</span>
+                                                    </div>
+                                                </td>
+                                                <td class="border-bottom-0">
+                                                    <h6 class="badge bg-primary rounded-3 fw-semibold mb-0 fs-4">
+                                                        {{ $product->ribbon }}</h6>
+                                                </td>
+                                                <td class="border-bottom-0">
+                                                    <div class="d-flex align-items-center">
+                                                        <button class="btn btn-sm btn-secondary me-2"
+                                                            onclick="decreaseQuantity({{ $product->id }})">-</button>
+                                                        <input type="text" id="quantityInput_{{ $product->id }}"
+                                                            value="{{ $product->quantity }}" class="form-control w-min">
+                                                        <button class="btn btn-sm btn-secondary ms-2"
+                                                            onclick="increaseQuantity({{ $product->id }})">+</button>
+                                                    </div>
+                                                </td>
+                                                <td class="border-bottom-0">
+                                                    @if ($product->ratingReviews->isNotEmpty())
+                                                        <p class="mb-0 fw-normal">
+                                                            @for ($i = 1; $i <= 5; $i++)
+                                                                @if ($i <= $product->ratingReviews->avg('rating'))
+                                                                    <i class="fas fa-star"></i>
+                                                                @else
+                                                                    <i class="far fa-star"></i>
+                                                                @endif
+                                                            @endfor
+                                                        </p>
+                                                    @else
+                                                        <p class="mb-0 fw-normal">No reviews yet</p>
+                                                    @endif
+                                                </td>
+                                                <td class="border-bottom-0">
+                                                    <h6 class="fw-semibold mb-0 fs-4">
+                                                        {{ strlen($product->description) > 30 ? substr($product->description, 0, 30) . '...' : $product->description }}
+                                                    </h6>
+                                                </td>
+                                                <td class="border-bottom-0">
+                                                    <a href="#" class="fw-semibold mb-0 fs-4 toggle-hidden"
+                                                        data-product-id="{{ $product->id }}">
+                                                        @if ($product->hidden)
+                                                            <i class="fa fa-eye-slash" aria-hidden="false"></i>
+                                                        @else
+                                                            <i class="fa fa-eye" aria-hidden="false"></i>
+                                                        @endif
+                                                    </a>
+                                                </td>
+                                                <td class="border-bottom-0">
+                                                    <a href="#" class="fw-semibold mb-0 fs-4"
+                                                        data-bs-toggle="dropdown" aria-expanded="false"><i
+                                                            class="fa fa-ellipsis-v" aria-hidden="false"></i>
+                                                    </a>
+                                                    <ul class="dropdown-menu dropdown-menu-end">
+                                                        <li>
+                                                            <a href="#" class="fw-semibold mb-0 fs-4 delete-product"
+                                                                data-product-id="{{ $product->id }}">
+                                                                <i class="fa fa-trash pd-l" aria-hidden="true"></i>Delete
+                                                            </a>
+                                                        </li>
+
+                                                        <li>
+                                                            <a href="{{ route('products.edit', $product->id) }}"
+                                                                class="fw-semibold mb-0 fs-4">
+                                                                <i class="fas fa-pencil-alt pd-l"></i> Edit
+                                                            </a>
+                                                        </li>
+                                                    </ul>
+                                                </td>
+                                            </tr>
+                                        @endforeach
+                                    @endif
                                 </tbody>
                             </table>
                         </div>
@@ -168,6 +262,14 @@
     </div>
 
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script>
+        $(document).ready(function() {
+            $('#priceRange').on('input', function() {
+                $('output[for=priceRange]').val($(this).val());
+            });
+        });
+    </script>
+
     <script>
         $(document).on('click', '.delete-product', function(e) {
             e.preventDefault();
@@ -246,11 +348,12 @@
 
         function updateQuantity(productId, newQuantity) {
             $.ajax({
-                url: "{{ route('update.quantity') }}",
+                url: "{{ route('update.productQuantity') }}",
                 method: 'POST',
                 data: {
                     product_id: productId,
                     new_quantity: newQuantity,
+                    from: 'Admin',
                     _token: "{{ csrf_token() }}"
                 },
                 success: function(response) {
@@ -261,6 +364,41 @@
                 }
             });
         }
+    </script>
+
+    <script>
+        $(document).ready(function() {
+            $('#product').on('input', function() {
+                var query = $(this).val();
+
+                $.ajax({
+                    type: 'POST',
+                    url: '{{ route('search.products') }}',
+                    data: {
+                        '_token': '{{ csrf_token() }}',
+                        'query': query
+                    },
+                    success: function(data) {
+                        updateAutocompleteProduct(data);
+                    }
+                });
+            });
+            $(document).on('click', '#searchProductResults h5', function() {
+                var selectedValue = $(this).text();
+                $('#product').val(selectedValue);
+                $('#searchProductResults').empty(); // Clear suggestions after selecting
+            });
+
+            function updateAutocompleteProduct(results) {
+                // Clear previous suggestions
+                $('#searchProductResults').empty();
+
+                // Append new suggestions
+                for (var i = 0; i < results.length; i++) {
+                    $('#searchProductResults').append('<h5>' + results[i].product + '</h5>');
+                }
+            }
+        });
     </script>
 
 
