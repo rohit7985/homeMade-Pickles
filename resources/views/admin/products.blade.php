@@ -17,26 +17,51 @@
                         </div>
                     </div>
                     <div class="card-body">
-                        <form class="row g-3" method="GET" action="{{ route('filter.products') }}" enctype="multipart/form-data">
+                        @if ($errors->any())
+                            <div class="alert alert-danger">
+                                <ul>
+                                    @foreach ($errors->all() as $error)
+                                        <li>{{ $error }}</li>
+                                    @endforeach
+                                </ul>
+                            </div>
+                        @endif
+
+                        <form class="row g-3" method="GET" action="{{ route('filter.products') }}"
+                            enctype="multipart/form-data">
                             @csrf
                             <div class="col-md-4 mb-3">
                                 <label for="status" class="form-label">Visibility</label>
                                 <select id="visibility" name="visibility" class="form-control">
-                                    <option value="" {{ request('visibility') === null ? 'selected' : '' }}>Select</option>
-                                    <option value="0" {{ request('visibility') === '0' ? 'selected' : '' }}>Show</option>
-                                    <option value="1" {{ request('visibility') === '1' ? 'selected' : '' }}>Hidden</option>
+                                    <option value="" {{ request('visibility') === null ? 'selected' : '' }}>Select
+                                    </option>
+                                    <option value="0" {{ request('visibility') === '0' ? 'selected' : '' }}>Show
+                                    </option>
+                                    <option value="1" {{ request('visibility') === '1' ? 'selected' : '' }}>Hidden
+                                    </option>
                                 </select>
                             </div>
                             <div class="col-md-4 mb-3">
                                 <label for="email" class="form-label">Product</label>
-                                <input type="text" class="form-control" id="product" name="product" value="{{ request('product') }}">
+                                <input type="text" class="form-control" id="product" name="product"
+                                    value="{{ request('product') }}">
                                 <div id="searchProductResults"></div>
+                            </div>
+                            <div class="col-md-4 mb-3">
+                                <label for="minPrice" class="form-label">Price Range</label>
+                                <div class="input-group">
+                                    <input type="range" class="form-range" id="priceRange" name="priceRange"
+                                        min="0" max="1000" step="10"
+                                        value="{{ request('priceRange') ?? 0 }}" oninput="amount.value=priceRange.value">
+                                    <output id="amount" name="amount" min-velue="0" max-value="500"
+                                        for="priceRange">{{ request('priceRange') ?? 0 }}</output>
+                                </div>
                             </div>
                             <div class="col-md-4 mb-3" style="margin-top: 46px">
                                 <button type="submit" class="btn btn-primary">Search</button>
                                 <a href="{{ route('admin.products') }}" class="btn btn-primary">Show All</a>
                             </div>
-                        </form>                                                                      
+                        </form>
                     </div>
                 </div>
             </div>
@@ -65,6 +90,9 @@
                                         </th>
                                         <th class="border-bottom-0">
                                             <h6 class="fw-semibold mb-0">Product</h6>
+                                        </th>
+                                        <th class="border-bottom-0">
+                                            <h6 class="fw-semibold mb-0">Merchant</h6>
                                         </th>
                                         <th class="border-bottom-0">
                                             <h6 class="fw-semibold mb-0">Price</h6>
@@ -104,7 +132,8 @@
                                         @foreach ($products as $product)
                                             <tr>
                                                 <td class="border-bottom-0">
-                                                    <h6 class="fw-semibold mb-0">{{ $loop->index + $products->firstItem() }}
+                                                    <h6 class="fw-semibold mb-0">
+                                                        {{ $loop->index + $products->firstItem() }}
                                                     </h6>
                                                 </td>
                                                 <td class="border-bottom-0">
@@ -115,7 +144,14 @@
                                                     @else
                                                         No Image Available
                                                     @endif
-                                                    {{-- <span class="fw-normal"></span> --}}
+                                                    <p class="mb-0 fw-normal">Category: {{ $product->category->category }}
+                                                    </p>
+                                                    <!-- Display Subcategory Name -->
+                                                    <p class="mb-0 fw-normal">Subcategory:
+                                                        {{ $product->subcategory->sub_category }}</p>
+                                                </td>
+                                                <td class="border-bottom-0">
+                                                    <p class="mb-0 fw-normal">{{ $product->merchant->name }}</p>
                                                 </td>
                                                 <td class="border-bottom-0">
                                                     <p class="mb-0 fw-normal">&#8377;{{ $product->price }}</p>
@@ -227,6 +263,14 @@
 
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script>
+        $(document).ready(function() {
+            $('#priceRange').on('input', function() {
+                $('output[for=priceRange]').val($(this).val());
+            });
+        });
+    </script>
+
+    <script>
         $(document).on('click', '.delete-product', function(e) {
             e.preventDefault();
             var productId = $(this).data('product-id');
@@ -304,7 +348,7 @@
 
         function updateQuantity(productId, newQuantity) {
             $.ajax({
-                url: "{{ route('update.quantity') }}",
+                url: "{{ route('update.productQuantity') }}",
                 method: 'POST',
                 data: {
                     product_id: productId,

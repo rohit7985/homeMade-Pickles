@@ -3,9 +3,13 @@
 namespace App\Http\Controllers;
 
 use App\Models\Cart;
+use App\Models\Category;
 use Illuminate\Http\Request;
 use App\Models\Product;
 use App\Models\ProductImage;
+use App\Models\SubCategory;
+use App\Models\User;
+use Illuminate\Support\Facades\Auth;
 
 class ProductController extends Controller
 {
@@ -24,6 +28,26 @@ class ProductController extends Controller
             return view('admin.products', compact('products'));
         } catch (\Exception $e) {
             dd($e);
+        }
+    }
+
+    public function addProduct()
+    {
+        try {
+            $categories = Category::all();
+            return view('admin.addProduct', compact('categories'));
+        } catch (\Exception $e) {
+            dd($e);
+        }
+    }
+
+    public function getSubcategories($categoryId)
+    {
+        try {
+            $subcategories = SubCategory::where('category_id', $categoryId)->get();
+            return response()->json($subcategories);
+        } catch (\Exception $e) {
+            return response()->json(['error' => 'Something went wrong'], 500);
         }
     }
 
@@ -56,8 +80,11 @@ class ProductController extends Controller
     public function store(Request $request)
     {
         try {
+            // Validate the incoming request data
             $validatedData = $request->validate([
                 'product' => 'required|string|max:255',
+                'category' => 'required|exists:categories,id', 
+                'subcategory' => 'required|exists:sub_categories,id',
                 'price' => 'required|numeric|min:0',
                 'weight' => 'nullable|numeric|min:0',
                 'quantity' => 'required|integer|min:0',
@@ -66,6 +93,11 @@ class ProductController extends Controller
                 'ribbon' => 'nullable|string|max:100',
             ]);
 
+            $merchantId = Auth::user()->id;
+            $validatedData['merchant_id'] = $merchantId;
+
+
+
             if ($request->hasFile('image')) {
                 $images = $request->file('image');
                 $image = $images[0];
@@ -73,7 +105,9 @@ class ProductController extends Controller
                 $image->move(public_path('product_images'), $imageName);
                 $validatedData['image'] = 'product_images/' . $imageName;
             }
-
+            $validatedData['category_id'] = intval($validatedData['category'], 10);
+            $validatedData['subcategory_id'] = intval($validatedData['subcategory'], 10);
+            unset($validatedData['category'], $validatedData['subcategory']);
             $product = Product::create($validatedData);
             $data = [];
             if ($product) {
@@ -113,7 +147,9 @@ class ProductController extends Controller
     public function edit(Product $editProduct)
     {
         try {
-            return view('admin.addProduct', compact('editProduct'));
+            $categories = Category::all();
+            $subcategories = SubCategory::all();
+            return view('admin.addProduct', compact('editProduct', 'categories', 'subcategories'));
         } catch (\Exception $e) {
             dd($e);
         }
@@ -164,6 +200,8 @@ class ProductController extends Controller
         try {
             $validatedData = $request->validate([
                 'product' => 'required|string|max:255',
+                'category' => 'required|exists:categories,id',
+                'subcategory' => 'required|exists:sub_categories,id',
                 'price' => 'required|numeric|min:0',
                 'weight' => 'nullable|numeric|min:0',
                 'quantity' => 'required|integer|min:0',
@@ -171,18 +209,26 @@ class ProductController extends Controller
                 'description' => 'nullable|string',
                 'ribbon' => 'nullable|string|max:100',
             ]);
-
+            // Handle file upload
             if ($request->hasFile('image')) {
                 $image = $request->file('image');
                 $imageName = time() . '_' . $image->getClientOriginalName();
                 $image->move(public_path('product_images'), $imageName);
                 $validatedData['image'] = 'product_images/' . $imageName;
+            } else {
+                // If no new image is provided, keep the existing image
+                unset($validatedData['image']);
             }
-
+            // dd($validatedData['category'],$validatedData['subcategory']);
+            $validatedData['category_id'] = intval($validatedData['category'], 10);
+            $validatedData['subcategory_id'] = intval($validatedData['subcategory'], 10);
+            unset($validatedData['category'], $validatedData['subcategory']);
+            // dd($validatedData);
             $product->update($validatedData);
 
             return redirect()->route('admin.products')->with('success', 'Product updated successfully!');
         } catch (\Exception $e) {
+            // Handle exception
             dd($e);
         }
     }

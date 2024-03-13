@@ -16,7 +16,15 @@ class Product extends Model
         'image',
         'description',
         'ribbon',
+        'category_id',
+        'subcategory_id',
+        'merchant_id',
     ];
+
+    public function isInWishlist()
+    {
+        return Wishlist::where('product_id', $this->id)->exists();
+    }
 
 
     public static function getAllProducts()
@@ -43,5 +51,19 @@ class Product extends Model
     {
         return $this->hasMany(ProductImage::class);
     }
+
+   public function category()
+   {
+       return $this->belongsTo(Category::class);
+   }
+
+   public function subcategory()
+   {
+       return $this->belongsTo(Subcategory::class);
+   }
+   public function merchant()
+   {
+       return $this->belongsTo(merchant::class);
+   }
 
 }

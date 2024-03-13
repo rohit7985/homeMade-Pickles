@@ -47,7 +47,7 @@ class CustomResetPasswordNotification extends ResetPasswordNotification
     public function toMail($notifiable)
     {
         $actionUrl = url(config('app.url').route('password.reset', ['token' => $this->token], false));
-
+    
         return (new MailMessage)
             ->view('emails.custom_reset_password_email', ['actionUrl' => $actionUrl])
             ->line('This password reset link will expire in 5 minutes. If you did not request a password reset, no further action is required.');

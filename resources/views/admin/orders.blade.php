@@ -185,14 +185,14 @@
                                                                 class="fa fa-ellipsis-v" aria-hidden="false"></i>
                                                         </a>
                                                         <ul class="dropdown-menu dropdown-menu-end">
-                                                            <li>
+                                                            {{-- <li>
                                                                 <a href="#"
                                                                     class="fw-semibold mb-0 fs-4 delete-product"
                                                                     data-product-id="{{ $order->id }}">
                                                                     <i class="fa fa-trash pd-l"
                                                                         aria-hidden="true"></i>Delete
                                                                 </a>
-                                                            </li>
+                                                            </li> --}}
 
                                                             <li>
                                                                 <a href="#" class="fw-semibold mb-0 fs-4 change-orderStatus" data-order-id="{{ $order->id }}">

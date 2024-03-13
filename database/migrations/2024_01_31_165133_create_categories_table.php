@@ -13,13 +13,8 @@ return new class extends Migration
     {
         Schema::create('categories', function (Blueprint $table) {
             $table->id();
-            $table->string('name');
-            $table->unsignedBigInteger('parent_id')->nullable(); // For sub-categories
-            $table->unsignedInteger('level')->default(1); // Default level is 1
+            $table->string('category');
             $table->timestamps();
-
-            // Foreign key relationship to itself for parent-child relationship
-            $table->foreign('parent_id')->references('id')->on('categories')->onDelete('cascade');
         });
     }
 

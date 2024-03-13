@@ -112,44 +112,60 @@ class AdminController extends Controller
     }
 
     public function approveSelectedCustomers(Request $request)
-{
-    try {
-        $customerIds = $request->input('customer_ids');
-        User::whereIn('id', $customerIds)->update(['status' => 1]);
-        $customerEmails = User::whereIn('id', $customerIds)->pluck('email')->toArray();
-        $mailData = [
-            'title' => 'Account Status',
-            'body' => 'Status Updated',
-            'status' => 1,
-            'name' => "Sir/Ma'am",
-        ];
-        $subject = 'Home Made Pickles: Account Status Changed';
-        Mail::bcc($customerEmails)->send(new SendMail($mailData, $subject));
-        return response()->json(['success' => true]);
-    } catch (\Exception $e) {
-        dd($e);
+    {
+        try {
+            $customerIds = $request->input('customer_ids');
+            User::whereIn('id', $customerIds)->update(['status' => 1]);
+            $customerEmails = User::whereIn('id', $customerIds)->pluck('email')->toArray();
+            $mailData = [
+                'title' => 'Account Status',
+                'body' => 'Status Updated',
+                'status' => 1,
+                'name' => "Sir/Ma'am",
+            ];
+            $subject = 'Home Made Pickles: Account Status Changed';
+            Mail::bcc($customerEmails)->send(new SendMail($mailData, $subject));
+            return response()->json(['success' => true]);
+        } catch (\Exception $e) {
+            dd($e);
+        }
     }
-}
 
 
 
     public function filterProducts(Request $request)
     {
         try {
+            $request->validate([
+                'visibility' => 'nullable|boolean',
+                'product' => 'nullable|string',
+                'priceRange' => 'nullable|numeric', 
+            ]);
             $visibility = $request->input('visibility');
             $product = $request->input('product');
+            $priceRange = $request->input('priceRange');
             $productQuery = Product::orderBy('created_at', 'desc');
+            // Apply filters based on validated input
             if (!is_null($visibility)) {
                 $productQuery->where('hidden', $visibility);
             }
+    
             if (!is_null($product)) {
                 $productQuery->where('product', 'like', '%' . $product . '%');
             }
+    
+            if (!is_null($priceRange)) {
+                $productQuery->where('price', '<=', $priceRange);
+            }
+    
+            // Paginate results
             $products = $productQuery->paginate(10)->appends($request->except('page'));
             $request->flash();
+    
             return view('admin.products', compact('products'));
         } catch (\Exception $e) {
-            dd($e);
+            return back()->with('error', 'An error occurred while filtering products. Please try again later.');
         }
     }
+    
 }

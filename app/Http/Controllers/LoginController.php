@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use App\Models\Admin;
+use App\Models\User;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\ValidationException;
 
@@ -19,7 +20,7 @@ class LoginController extends Controller
             ]);
             if (Auth::guard('admin')->attempt($credentials)) {
                 return redirect('/admin/dashboard');
-            } else {
+            }else {
                 return back()->withInput($request->only('email'))->withErrors([
                     'email' => 'Invalid email or Password',
                 ]);

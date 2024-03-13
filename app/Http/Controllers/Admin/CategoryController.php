@@ -31,30 +31,45 @@ class CategoryController extends Controller
             // Validation logic here
             $request->validate([
                 'categoryName' => 'required|string|max:255',
-                'parentCategory' => 'nullable', // Validate that the selected parent category exists
-                'categoryLevel' => 'required|integer',
             ]);
-
-            // Create the category
             $category = new Category();
-            $category->name = $request->input('categoryName');
-
-            if ($request->has('parentCategory')) {
-                $parentCategory = Category::find($request->input('parentCategory'));
-
-                if ($parentCategory) {
-                    $category->parent_id = $parentCategory->id;
-                    $category->level = $parentCategory->level + 1;
-                }
-            } else {
-                $category->level = $request->input('categoryLevel');
-            }
+            $category->category = $request->input('categoryName');
             $category->save();
-
             return redirect()->back()->with('success', 'Category added successfully');
         } catch (\Exception $e) {
             dd($e);
             return redirect()->back()->with('error', 'An error occurred: ' . $e->getMessage());
         }
+    }
+
+    public function deleteCategory($id)
+    {
+        try {
+            $category = Category::findOrFail($id);
+            $category->delete();
+            return response()->json(['success' => true, 'message' => 'Category deleted successfully']);
+        } catch (QueryException $e) {
+            dd($e);
+            return response()->json(['success' => false, 'message' => 'Error deleting category.']);
+        } catch (\Exception $e) {
+            dd($e);
+            return response()->json(['success' => false, 'message' => 'An unexpected error occurred.']);
+        }
+    }
+
+    public function updateCategory(Request $request)
+    {
+        $request->validate([
+            'categoryName' => 'required|max:255',
+            'categoryId' => 'required|exists:categories,id',
+        ]);
+
+        $category = Category::findOrFail($request->input('categoryId'));
+        $category->update([
+            'category' => $request->input('categoryName'),
+            // Add other fields as needed
+        ]);
+
+        return redirect()->back()->with('success', 'Category updated successfully');
     }
 }

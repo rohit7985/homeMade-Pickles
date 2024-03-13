@@ -27,27 +27,26 @@ class UserController extends Controller
             $user = User::create([
                 'name' => $validatedData['name'],
                 'email' => $validatedData['email'],
+                'user_type' => $request->createdBy == 'Admin' ? 'M':'C',
                 'password' => Hash::make($validatedData['password']),
             ]);
-            $otp = rand(100000, 999999);
-            userOTP::create([
-                'user_id' => $user->id,
-                'email' => $user->email,
-                'otp' => $otp,
-            ]);
-
-
-            $mailData = [
-                'title' => 'Varification',
-                'body' => 'Varification for OTP ',
-                'otp' => $otp,
-                'name' => $user->name,
-            ];
-            $subject = 'Home Made Pickles : Account Varification';
-            Mail::to('rahulpatel979503@gmail.com')->send(new SendMail($mailData, $subject));
             if ($request->createdBy && $request->createdBy == 'Admin') {
                 return redirect('/admin/customers');
             } else {
+                $otp = rand(100000, 999999);
+                userOTP::create([
+                    'user_id' => $user->id,
+                    'email' => $user->email,
+                    'otp' => $otp,
+                ]);
+                $mailData = [
+                    'title' => 'Varification',
+                    'body' => 'Varification for OTP ',
+                    'otp' => $otp,
+                    'name' => $user->name,
+                ];
+                $subject = 'Home Made Pickles : Account Varification';
+                Mail::to('rahulpatel979503@gmail.com')->send(new SendMail($mailData, $subject));
                 return view('login', compact('user'));
             }
         } catch (\Exception $e) {
@@ -125,11 +124,20 @@ class UserController extends Controller
     {
         try {
             $query = $request->input('query');
-            if($query != ''){
-                $users = User::where('name', 'like', '%' . $query . '%')->get();
-            }else{
-                $users = User::where('name',$query)->get();
+            $user_type = $request->input('user_type') ?? 'C';
+            if($user_type == 'M'){
+            if ($query != '') {
+                $users = User::where('user_type', 'M')->where('name', 'like', '%' . $query . '%')->get();
+            } else {
+                $users = User::where('user_type', 'M')->where('name', $query)->get();
             }
+        }else{
+            if ($query != '') {
+                $users = User::where('user_type', 'C')->where('name', 'like', '%' . $query . '%')->get();
+            } else {
+                $users = User::where('user_type', 'C')->where('name', $query)->get();
+            }
+        }
             return response()->json($users);
         } catch (\Exception $e) {
             dd($e);
