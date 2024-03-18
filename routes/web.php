@@ -22,6 +22,7 @@ use App\Http\Controllers\Merchants\MerchantController;
 use App\Http\Controllers\Merchants\MerchantOrderController;
 use App\Http\Controllers\Merchants\MerchantProductController;
 use App\Http\Controllers\Merchants\MerchantRegistrationController;
+use App\Http\Controllers\PolicyController;
 use App\Http\Controllers\WishlistController;
 
 /*
@@ -48,6 +49,7 @@ Route::get('/user/registration', function () {
 })->name('view.registration');
 
 Route::get('/login', [shopController::class, 'viewLogin'])->name('login.view');
+Route::get('/privacy/policy', [PolicyController::class, 'privacy'])->name('privacy');
 
 
 
