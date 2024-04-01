@@ -58,6 +58,11 @@ class User extends Authenticatable
         $this->notify(new CustomResetPasswordNotification($token));
     }
 
+    public function transactions()
+{
+    return $this->hasMany(CustWallet::class);
+}
+
     public function scopeGetMerchantId($query, $name)
     {
         return $query->where('name', $name)->value('id');

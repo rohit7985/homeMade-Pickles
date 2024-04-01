@@ -5,6 +5,7 @@
                 <th scope="col"><a href="{{ route('user.myProfile') }}">My Profile</a></th>
                 <th scope="col"><a href="{{route('customer.myOrder')}}">My Order</a></th>
                 <th scope="col"><a href="{{route('customer.address')}}">Manage Address</a></th>
+                <th scope="col"><a href="{{route('customer.wallet')}}">Wallet</a></th>
                 <th scope="col"><a href="{{route('customer.wishlist')}}">My Wishlist</a></th>
               </tr>
         </thead>

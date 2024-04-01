@@ -5,6 +5,13 @@
 .mt{
     margin-top: 200px;
 }
+.mt-20{
+    margin-top: 20px;
+}
+
+.ml{
+    margin-left: 60vw;
+}
 
 .bdr{
     border: 2px solid gainsboro;

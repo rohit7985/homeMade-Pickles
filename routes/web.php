@@ -17,11 +17,13 @@ use App\Http\Controllers\RatingReviewController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Auth\ForgotPasswordController;
 use App\Http\Controllers\Auth\ResetPasswordController;
+use App\Http\Controllers\Customer\WalletController;
 use App\Http\Controllers\Merchants\MerchantCategoryController;
 use App\Http\Controllers\Merchants\MerchantController;
 use App\Http\Controllers\Merchants\MerchantOrderController;
 use App\Http\Controllers\Merchants\MerchantProductController;
 use App\Http\Controllers\Merchants\MerchantRegistrationController;
+use App\Http\Controllers\RazorpayPaymentController;
 use App\Http\Controllers\WishlistController;
 
 /*
@@ -97,6 +99,9 @@ Route::middleware('auth.user')->prefix('customer')->group(function () {
     Route::post('/add/contact', [CustomerProfileController::class, 'addContact'])->name('add.contact');
 
     Route::get('/myOrder', [CustomerProfileController::class, 'myOrder'])->name('customer.myOrder');
+
+    Route::post('payment', [RazorpayPaymentController::class, 'store'])->name('payment.store');
+
     Route::post('/myOrder/store', [CustomerOrderController::class, 'store'])->name('complete.customerOrder');
 
     Route::post('/rating/store', [RatingReviewController::class, 'store'])->name('rating.store');
@@ -109,6 +114,11 @@ Route::middleware('auth.user')->prefix('customer')->group(function () {
     Route::delete('/address/{address}', [AddressController::class, 'destroy'])->name('address.destroy');
     Route::get('/edit-address/{id}', [AddressController::class, 'editAddress'])->name('edit.address');
     Route::post('/address/update', [AddressController::class, 'update'])->name('address.update');
+
+    Route::get('/wallet', [WalletController::class, 'myWallet'])->name('customer.wallet');
+    Route::post('/wallet/filter', [WalletController::class, 'filter'])->name('wallet.filter');
+    Route::post('/wallet/add-money', [WalletController::class, 'addMoney'])->name('wallet.addMoney');
+
 });
 
 
