@@ -17,7 +17,6 @@
             <div class="container py-5">
                 <div class="testimonial-header text-center">
                     <h4 class="text-primary">Privacy Policy</h4>
-                    <h1 class="display-5 mb-5 text-dark">Our Client Saying!</h1>
                 </div>
                     <div class="testimonial-item img-border-radius bg-light rounded p-4">
                         <div class="position-relative">

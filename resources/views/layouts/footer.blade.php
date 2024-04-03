@@ -39,10 +39,10 @@
                     <h4 class="text-light mb-3">Shop Info</h4>
                     <a class="btn-link" href="{{route('about')}}">About Us</a>
                     <a class="btn-link" href="">Contact Us</a>
-                    <a class="btn-link" href="">Privacy Policy</a>
+                    <a class="btn-link" href="{{route('privacy')}}">Privacy Policy</a>
                     <a class="btn-link" href="">Terms & Condition</a>
                     <a class="btn-link" href="">Return Policy</a>
-                    <a class="btn-link" href="">FAQs & Help</a>
+                    <a class="btn-link" href="{{route('faq')}}">FAQs & Help</a>
                 </div>
             </div>
             <div class="col-lg-3 col-md-6">

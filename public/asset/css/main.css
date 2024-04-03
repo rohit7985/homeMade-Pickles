@@ -6,6 +6,10 @@
     margin-top: 200px;
 }
 
+.mt-20{
+    margin-top: 20px;
+}
+
 .bdr{
     border: 2px solid gainsboro;
     border-radius: 5px;

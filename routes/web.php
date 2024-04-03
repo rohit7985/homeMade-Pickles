@@ -44,6 +44,10 @@ Route::get('/about-us', function () {
     return view('about');
 })->name('about');
 
+Route::get('/FAQ', function () {
+    return view('faq');
+})->name('faq');
+
 Route::get('/user/registration', function () {
     return view('registration');
 })->name('view.registration');

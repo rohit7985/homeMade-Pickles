@@ -30,7 +30,7 @@ class CustomerOrderController extends Controller
                         $orderDetails = json_encode($data);
                         $order = Order::create([
                             'customer_id' => $validatedData['userId'],
-                            'total_amount' => $validatedData['totalPrice'],
+                            'total_amount' => $validatedData['totalPrice'] + 60,
                             'status' => '0',
                             'details' => $orderDetails,
                         ]);
