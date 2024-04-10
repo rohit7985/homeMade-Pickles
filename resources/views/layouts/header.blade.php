@@ -95,6 +95,11 @@
                                     <a class="dropdown-item" href="{{ route('user.myProfile') }}">My Profile</a>
                                 </li>
                                 <li>
+                                   
+                                    <a class="dropdown-item" href="#" data-toggle="modal" data-target="#changePasswordModal">Change Password</a>
+
+                                </li>
+                                <li>
                                     <a class="dropdown-item" href="{{ route('user.logout') }}">Logout</a>
                                 </li>
                             </ul>
@@ -109,6 +114,33 @@
         </div>
     </div>
     <!-- Navbar End -->
+
+    <!-- Change Password Modal -->
+<div class="modal fade" id="changePasswordModal" tabindex="-1" role="dialog" aria-labelledby="changePasswordModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="changePasswordModalLabel">Change Password</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          <!-- Your form for changing password goes here -->
+          <form method="POST" action="{{route('send.changePasswordLink')}}">
+            @csrf
+            <div class="form-group">
+              <label for="email">Email</label>
+              <input type="email" class="form-control" id="email" name="email" required>
+            </div>
+            
+            <button type="submit" class="btn btn-primary mt-3">Send Link</button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+  
 
 
 <!-- Modal Search Start -->
@@ -138,6 +170,12 @@
 
 <!-- Add jQuery if not already included -->
 <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+
+<!-- Bootstrap JS and dependencies -->
+<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
 
 <script>
     $(document).ready(function () {

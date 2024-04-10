@@ -17,6 +17,7 @@ use App\Http\Controllers\RatingReviewController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Auth\ForgotPasswordController;
 use App\Http\Controllers\Auth\ResetPasswordController;
+use App\Http\Controllers\ChangePasswordController;
 use App\Http\Controllers\Merchants\MerchantCategoryController;
 use App\Http\Controllers\Merchants\MerchantController;
 use App\Http\Controllers\Merchants\MerchantOrderController;
@@ -43,6 +44,8 @@ Route::get('/', function () {
 Route::get('/about-us', function () {
     return view('about');
 })->name('about');
+
+
 
 Route::get('/FAQ', function () {
     return view('faq');
@@ -75,6 +78,12 @@ Route::post('/user/verify-otp', [UserController::class, 'verifyOtp'])->name('otp
 Route::get('/user/resend-otp/{userId}', [UserController::class, 'resendOTP'])->name('resend.otp');
 
 Route::post('/send-reset-password-link', [ForgotPasswordController::class, 'sendResetLinkEmail'])->name('send.resetPasswordLink');
+
+Route::post('/send-change-password-link', [ChangePasswordController::class, 'sendResetLink'])->name('send.changePasswordLink');
+
+Route::get('/change-password/{token}', [ChangePasswordController::class, 'showChangeForm'])->name('password.change');
+
+Route::post('/change-password', [ChangePasswordController::class, 'updatePassword'])->name('custPassword.change');
 
 Route::get('/reset-password/{token}', [ResetPasswordController::class, 'showResetForm'])->name('password.reset');
 

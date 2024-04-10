@@ -52,7 +52,7 @@
                         <h3 id="passwordError" style="display: none; color: red;">Password must be at least 8 characters.
                         </h3>
 
-                        <form id="loginForm" action="{{ route('user.login') }}" method="post">
+                        <form id="" action="{{ route('user.login') }}" method="post">
                             @csrf
                             <div class="position-relative mx-auto mb">
                                 <input class="form-control border-2 border-secondary w-75 py-3 px-4 rounded-pill"
